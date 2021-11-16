@@ -3,6 +3,7 @@ package classes;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
@@ -11,7 +12,7 @@ import javax.imageio.stream.ImageInputStream;
  *
  * @author Jhonny Diaz
  */
-public class image {
+public class Image {
     int matrix[][];
     public int row;
     public int column;
@@ -24,6 +25,7 @@ public class image {
      * 1 for white
      * 2 for finish
      * 3 for start
+     * @param path path is the directory for the image that we want to take
      */
     public void getImageInfo(String path){
         
@@ -82,10 +84,7 @@ public class image {
                 
             }
             
-            
-            
-            
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Me caí");
         }
     }

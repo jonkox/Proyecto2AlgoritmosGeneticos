@@ -9,7 +9,7 @@ package classes;
  *
  * @author Jhonny Diaz
  */
-public class individual {
+public class Individual {
     public int value;
     public int x,y;
 }

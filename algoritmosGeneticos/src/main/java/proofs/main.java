@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package proofs;
-import classes.image;
+import classes.Image;
 
 
 /**
@@ -18,7 +18,7 @@ public class main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        image hola = new image();
+        Image hola = new Image();
         
         hola.getImageInfo("src\\main\\java\\images\\mapa2.png");
         
