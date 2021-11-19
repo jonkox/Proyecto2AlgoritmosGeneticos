@@ -5,21 +5,21 @@ import java.util.ArrayList;
 
 public class Individual {
     // Attributes
-    public int x, y;  // Position
-    private final int generation;
-    public double incomplete_score, final_score, normalized_score; 
+    public int x, y;  // Position (Genes), cant be final (constant) due to mutations
+    private final int generation;  // Which generation this individual belongs, first gen, second gen, third gen, ...
+    public float incomplete_score, final_score, normalized_score;  // Needed to calculate the fitness score
     private final Individual father, mother; // Parents
     
     
     // Constructors
     
-    // For first generation. Doesnt get parents, they are in null.
+    // For first generation. Doesnt get parents, they are in null. Are created on a random position
     public Individual(int x, int y){
         this.x = x;
         this.y = y;
         this.father = null;
         this.mother = null;
-        generation = 0;
+        generation = 0; // First genration
     }
     
     // For general generations. Gets parents as parameters.
@@ -71,7 +71,9 @@ public class Individual {
     
   
     
-    // Calculates the fitness score without taking into account the neighbors score
+    /* Calculates the fitness score without taking into account the neighbors score
+    Saves the result in the variable incomplete_score
+    */
     public void calculateIncompleteScore(){
         /*
         if(isOnWhite()){
@@ -88,14 +90,25 @@ public class Individual {
         
     }
     
-    // Calculates the fitness score taking into account the neighbors score
-    public void calculateFitnessScore(int range){
-        
+    /* Calculates the fitness score taking into account the neighbors score
+    The parameter visionRange tells how many pixels away an individual can search for neighbors
+    It he individual can see at the most 3 pixels from itslef, or 5 pixels from itself...
+    Saves the result of the fitness score in the final_score variable and returns that value
+    */
+    public float calculateFitnessScore(int visionRange){
+        return final_score;
     }
     
     
-    public void setNormalizedScore(int sumResult){
+    /* Normalizes the final score putting it between 0 and 1
+    It calculates and average to normalized
+    It returns an integer approximation between 0 and 100 of the normalized values
+    That returned integer number between 0 and 100 is needed by the class Generation
+    The normalized score is used for the selection roulette
+    */
+    public int setNormalizedScore(float sumResult){
         normalized_score = final_score / sumResult;
+        return (int) normalized_score*100;
     }
     
     /*Prints spaces
