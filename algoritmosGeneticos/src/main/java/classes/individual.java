@@ -70,49 +70,57 @@ public class Individual {
     Prints the first generation and its rows, prints the second generation and its rows and so on
     */
     private void printTree(ArrayList<ArrayList<String>> geonology){
-        float gap = 12;  // Horizontal space between an inidividual and the next in the same generation (line)
-        float initial = 0;  // Horizontal space that must be kept at the start of line (to get the correct formar)
+        int gap[] = {5, 20, 50, 110};
+        int initial[] = {0, 8, 22, 48, 108};  // Horizontal space between an inidividual and the next in the same generation (line)
+        double generation_size;
+        ArrayList<String> generation_list;
+        int index;
         
         System.out.print("Generacion 1:   ");  // Starts the printing
         
         // Moves from one generation to the next
         for(int i = 0; i < generation; i++){
-            double generation_size = Math.pow(2, generation-i);
-            ArrayList<String> generation_list = geonology.get(i);
-            
-            // Moves among the inidviduals of this generation
-            for(int j = 0; j < generation_size; j++){
-               System.out.print(generation_list.get(j));
-               printGap(gap);
+            if (generation - i > 4){
+                System.out.println(geonology.get(i) + "\n");
+                System.out.print("Generacion " + (i+2) + ":   ");
+                
+            } else {
+                index = 4-generation+i;
+                generation_size = Math.pow(2, generation-index);
+                generation_list = geonology.get(index);
+
+                // Moves among the inidviduals of this generation
+                for(int j = 0; j < generation_size; j++){
+                   System.out.print(generation_list.get(j));
+                   printGap(gap[index]);
+                }
+
+                // Prints the rows
+                System.out.print("\n                ");  // Line jump to create a line for rows and spaces are needed for format
+                generation_size /= 2;  // Resizing end condition to get the correct format
+                printGap(initial[index]);
+
+                // Moves under the inidviduals of this generation to print its row
+                for(int j = 0; j < generation_size; j++){
+                   // Row of father
+                   System.out.print("     \\    ");
+                   printGap(gap[index]);
+
+                   // Row of father
+                   System.out.print("     /    ");
+                   printGap(gap[index]);
+                }
+
+
+                // Prepares for the next generation (iteration)
+                System.out.println("");  // Creates new line
+                System.out.print("Generacion " + (i+2) + ":   ");
+                printGap(initial[index+1]);
             }
-            
-            // Prints the rows
-            System.out.print("\n               ");  // Line jump to create a line for rows and spaces are needed for format
-            generation_size /= 2;  // Resizing end condition to get the correct format
-            printGap(initial);
-            
-            // Moves under the inidviduals of this generation to print its row
-            for(int j = 0; j < generation_size; j++){
-               // Row of father
-               System.out.print("      \\     ");
-               printGap(gap);
-               
-               // Row of father
-               System.out.print("      /     ");
-               printGap(gap);
-            }
-            
-            
-            // Prepares for the next generation (iteration)
-            System.out.println("");  // Creates new line
-            System.out.print("Generacion " + (i+2) + ":   ");
-            printGap(gap);
-            // Resizing space variables
-            initial = gap;
-            gap *= 2.715;
             
         }
-        System.out.println(geonology.get(generation).get(0));  // Prints THIS individual
+        
+        System.out.println(geonology.get(generation).get(0));  // Finishes printing THIS individual
     }
     
     /*

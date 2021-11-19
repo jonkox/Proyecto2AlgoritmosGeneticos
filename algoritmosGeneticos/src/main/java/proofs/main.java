@@ -22,18 +22,24 @@ public class main {
     public static void main(String[] args) {
         /*Image hola = new Image(); 
         hola.getImageInfo("src\\main\\java\\images\\mapa2.png");
+        
+        Individual God = new Individual(0, 0);
+        
+        Individual Christ = new Individual(God, God, 1);
+        
+        Individual Adan = new Individual(Christ, Christ, 0);
                 
-        Individual Pelico = new Individual(11, 12);
-        Individual EspPelica = new Individual(18, 19);
+        Individual Pelico = new Individual(Adan, Adan, 0);
+        Individual EspPelica = new Individual(Adan, Adan, 0);
         
-        Individual Chepe = new Individual(21, 22);
-        Individual Tona = new Individual(28, 29);
+        Individual Chepe = new Individual(Adan, Adan,0);
+        Individual Tona = new Individual(Adan, Adan, 0);
         
-        Individual Cervando = new Individual(31, 32);
-        Individual Custodia = new Individual(38, 39);
+        Individual Cervando = new Individual(Adan, Adan, 0);
+        Individual Custodia = new Individual(Adan, Adan, 0);
         
-        Individual Jesus = new Individual(41, 42);
-        Individual Chaya = new Individual(48, 49);
+        Individual Jesus = new Individual(Adan, Adan, 0);
+        Individual Chaya = new Individual(Adan, Adan, 0);
         
         
         Individual Orlando = new Individual(Pelico, EspPelica, 1);
@@ -47,9 +53,6 @@ public class main {
         Individual mother = new Individual(Mateo, Tita, 1);
         
         Individual me = new Individual(father, mother, 0);
-        mother.getGeonolgy();*/
-        
-        for (int i = 0; i < 100; i++)
-        System.out.println((int)Math.floor(Math.random()*(2)));
+        me.getGeonolgy();*/
     }
 }
