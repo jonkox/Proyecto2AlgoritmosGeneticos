@@ -21,38 +21,39 @@ public class main {
      */
     public static void main(String[] args) {
         /*Image hola = new Image(); 
-        hola.getImageInfo("src\\main\\java\\images\\mapa2.png");
+        hola.getImageInfo("src\\main\\java\\images\\mapa2.png");*/
         
-        Individual God = new Individual(0, 0);
         
-        Individual Christ = new Individual(God, God, 1);
-        
-        Individual Adan = new Individual(Christ, Christ, 0);
+        Individual Adan = new Individual(12, 18);
+        Individual Eva = new Individual(17, 15);
                 
-        Individual Pelico = new Individual(Adan, Adan, 0);
-        Individual EspPelica = new Individual(Adan, Adan, 0);
         
-        Individual Chepe = new Individual(Adan, Adan,0);
-        Individual Tona = new Individual(Adan, Adan, 0);
+        Individual Pelico = new Individual(Adan, Eva);
+        Individual EspPelica = new Individual(Adan, Eva);
         
-        Individual Cervando = new Individual(Adan, Adan, 0);
-        Individual Custodia = new Individual(Adan, Adan, 0);
+        Individual Chepe = new Individual(Adan, Eva);
+        Individual Tona = new Individual(Adan, Eva);
         
-        Individual Jesus = new Individual(Adan, Adan, 0);
-        Individual Chaya = new Individual(Adan, Adan, 0);
+        Individual Cervando = new Individual(Adan, Eva);
+        Individual Custodia = new Individual(Adan, Eva);
         
-        
-        Individual Orlando = new Individual(Pelico, EspPelica, 1);
-        Individual Olga = new Individual(Chepe, Tona, 1);
-        
-        Individual Mateo = new Individual(Cervando, Custodia, 0);
-        Individual Tita = new Individual(Jesus, Chaya, 0);
+        Individual Jesus = new Individual(Adan, Eva);
+        Individual Chaya = new Individual(Adan, Eva);
         
         
-        Individual father = new Individual(Orlando, Olga, 0);
-        Individual mother = new Individual(Mateo, Tita, 1);
+        Individual Orlando = new Individual(Pelico, EspPelica);
+        Individual Olga = new Individual(Chepe, Tona);
         
-        Individual me = new Individual(father, mother, 0);
-        me.getGeonolgy();*/
+        Individual Mateo = new Individual(Cervando, Custodia);
+        Individual Tita = new Individual(Jesus, Chaya);
+        
+        
+        Individual father = new Individual(Orlando, Olga);
+        Individual mother = new Individual(Mateo, Tita);
+        
+        Individual me = new Individual(father, mother);
+        me.getGeonolgy();
+        
+
     }
 }

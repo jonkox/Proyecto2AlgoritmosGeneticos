@@ -17,8 +17,16 @@ public class Generation {
     }
     
     // Gives a fitness score to all the individuals of the generation
-    public void ApplyFitnessScore(){
+    public void ApplyFitnessScore(int range){
+        // Sets to all the individuals a protype fitness score without taking into account the neighbors
+        for (Individual individual : individuals){
+            individual.calculateIncompleteScore();
+        }
         
+        // Sets to all the individuals the real fitness score taking into account the neighbors data
+        for (Individual individual : individuals){
+            individual.calculateFitnessScore(range);
+        }
     }
     
     

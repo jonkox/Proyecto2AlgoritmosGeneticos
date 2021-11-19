@@ -5,9 +5,9 @@ import java.util.ArrayList;
 
 public class Individual {
     // Attributes
-    public final int x, y;  // Position
+    public int x, y;  // Position
     private final int generation;
-    public float incomplete_score, final_score; 
+    public double incomplete_score, final_score, normalized_score; 
     private final Individual father, mother; // Parents
     
     
@@ -23,11 +23,13 @@ public class Individual {
     }
     
     // For general generations. Gets parents as parameters.
-    public Individual(Individual father, Individual mother, int order){
+    public Individual(Individual father, Individual mother){
         this.father = father;
         this.mother = mother;
         
         // Determines if which position is taken from the father and which is taken from the mother
+        int order = (int)Math.floor(Math.random()*2);
+        
         if(order == 0){
             // Horizontal from father and vertical from mother
             x = father.x;
@@ -44,6 +46,57 @@ public class Individual {
     
     
     // Methods
+    
+    
+    /*
+    Produces a mutation
+    A gen(position) randomly changes
+    It can change the x position, y position or in rare cases both can mutate
+    */
+    public void mutate(int x_limit, int y_limit){
+        int option = (int)Math.floor(Math.random()*100);
+        
+        if(option < 45){
+            // Has a 45% chance of mutating the x position
+            x = (int)Math.floor(Math.random()*x_limit+1);
+        } else if (option < 90){
+            // Has another 45% chance of mutating the y position
+            y = (int)Math.floor(Math.random()*y_limit+1);
+        } else {
+            // Finally has a 10% chance of mutating both, the x and y positions
+            x = (int)Math.floor(Math.random()*x_limit+1);
+            y = (int)Math.floor(Math.random()*y_limit+1);
+        }
+    }
+    
+  
+    
+    // Calculates the fitness score without taking into account the neighbors score
+    public void calculateIncompleteScore(){
+        /*
+        if(isOnWhite()){
+            // At least it is on a white position, there it will get a score over 0, good or bad
+            
+            // Checks if it is on dead end
+            if(isOnDeadEnd()){
+                incomplete_score = 1;
+            }
+                   
+        }
+        
+        // The else will be it is in black, is left with the default 0*/
+        
+    }
+    
+    // Calculates the fitness score taking into account the neighbors score
+    public void calculateFitnessScore(int range){
+        
+    }
+    
+    
+    public void setNormalizedScore(int sumResult){
+        normalized_score = final_score / sumResult;
+    }
     
     /*Prints spaces
     Used by the method printTree() to produce the desired format
@@ -70,28 +123,34 @@ public class Individual {
     Prints the first generation and its rows, prints the second generation and its rows and so on
     */
     private void printTree(ArrayList<ArrayList<String>> geonology){
-        int gap[] = {5, 20, 50, 110};
-        int initial[] = {0, 8, 22, 48, 108};  // Horizontal space between an inidividual and the next in the same generation (line)
-        double generation_size;
-        ArrayList<String> generation_list;
-        int index;
+        int gap[] = {5, 20, 50, 110};  // Horizontal space between an inidividual and the next in the same generation (line) for the nice case
+        int initial[] = {0, 8, 22, 48, 108};  // Starting spaces for each line in the nice case
+        double generation_size;  // Needed for calculations of the nice case
+        ArrayList<String> generation_list;  // Needed to print individual by individual in the nice case
+        int index;  // Needed to adjust the nice case
         
         System.out.print("Generacion 1:   ");  // Starts the printing
         
         // Moves from one generation to the next
         for(int i = 0; i < generation; i++){
             if (generation - i > 4){
-                System.out.println(geonology.get(i) + "\n");
-                System.out.print("Generacion " + (i+2) + ":   ");
+                // General case
+                
+                // Generation is to old and to big
+                System.out.println(geonology.get(i) + "\n");  // just prints the list
+                System.out.print("Generacion " + (i+2) + ":   ");  // for the next generation (iteration)
                 
             } else {
-                index = 4-generation+i;
-                generation_size = Math.pow(2, generation-index);
-                generation_list = geonology.get(index);
+                // Nice case, the generation is close enough to THIS individual to worth drawing the tree
+                
+                index = 4-generation+i;  // To work properly with the positions of the arrays gap[] and initial[]
+                generation_list = geonology.get(index);  // Gets the individuals of the generation is going to be printed
+                generation_size = generation_list.size();  // for stop condition
+                
 
                 // Moves among the inidviduals of this generation
-                for(int j = 0; j < generation_size; j++){
-                   System.out.print(generation_list.get(j));
+                for(String individual_info : generation_list){
+                   System.out.print(individual_info);  // Prints an individual
                    printGap(gap[index]);
                 }
 
@@ -154,28 +213,5 @@ public class Individual {
         
                   // Recursive function that returns geonology organized by generations
         printTree(getGeonolgyAux(this, geonology));  // Visually prints the tree
-    }
-    
-    
-    
-    // Calculates the fitness score without taking into account the neighbors score
-    /*public void calculateIncompleteScore(){
-        if(isOnWhite()){
-            // At least it is on a white position, there it will get a score over 0, good or bad
-            
-            // Checks if it is on dead end
-            if(isOnDeadEnd()){
-                incomplete_score = 1;
-            }
-                   
-        }
-        
-        // The else will be it is in black, is left with the default 0
-        
-    }*/
-    
-    // Calculates the fitness score taking into account the neighbors score
-    public void calculateFitnessScore(){
-        
     }
 }

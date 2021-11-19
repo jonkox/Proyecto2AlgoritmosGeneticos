@@ -46,7 +46,7 @@ public class Environment {
         Individual mother = lastGeneration.selectIndividual();
         
         // Creates and returns a new individual
-        return new Individual(father, mother, (int)Math.floor(Math.random()*2));
+        return new Individual(father, mother);
     }
     
     public void createGeneration(){
