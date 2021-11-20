@@ -2,6 +2,7 @@ package classes;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +14,7 @@ import javax.imageio.stream.ImageInputStream;
  * @author Jhonny Diaz
  */
 public class Image {
-    int matrix[][];
+    public int matrix[][];
     public int row;
     public int column;
     
@@ -48,6 +49,7 @@ public class Image {
             for(int i = 0; i<bfImage.getHeight();i++){
                 for(int j = 0; j<bfImage.getWidth();j++){
                     
+                    
                     int srcPixel = bfImage.getRGB(i, j); //take the pixel
                     
                     Color c = new Color(srcPixel); //take the pixel's color
@@ -57,6 +59,8 @@ public class Image {
                     int G = c.getGreen();
                     int B = c.getBlue();
                     
+                    
+
                     //assign and write the code of the color
                     if (R == 0 && G == 0 && B == 0) {
                         matrix[i][j] = 0;
@@ -72,20 +76,102 @@ public class Image {
                     }
                     else{
                         matrix[i][j] = 0;
-                    }                   
+                    }   
                 }
-            }
-            
-            for(int i = 0; i<row;i++){
-                for(int j = 0; j<column;j++){
-                    System.out.print(matrix[i][j]+" ");
-                }
-                System.out.println("");
-                
             }
             
         } catch (IOException e) {
             System.out.println("Me caí");
         }
     }
+    
+    
+    public void editImage(int generation){
+        //create variables
+        File image = null;
+        BufferedImage bfImage = null;
+        
+        try {
+            //instance variables
+            image = new File("src\\main\\java\\images\\output1.png");
+            bfImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+            bfImage = ImageIO.read(image);
+
+            
+        } catch (IOException e) {
+            System.out.println("Me caí");
+            System.out.println(e);
+        }
+        
+        
+        try {
+            //In this section we want to use the main matrix to get every pixel's info
+            //and edit the new image for every generation
+            
+            //Reset the image
+            for(int i = 0; i<matrix.length;i++){
+                
+               for(int j = 0; j<matrix[i].length;j++){
+                   
+                    int rgb = new Color(255, 255, 255).getRGB();
+                    bfImage.setRGB(i, j, rgb);
+               }
+            }
+
+            //This cycle read the matrix and assign every pixel into the new image
+            for(int i = 0; i<matrix.length;i++){
+               for(int j = 0; j<matrix[i].length;j++){
+                   switch (matrix[i][j]) {
+                       case 0:
+                           {
+                               int rgb = new Color(0, 0, 0).getRGB();
+                               bfImage.setRGB(i, j, rgb);
+                               break;
+                           }
+                       case 1:
+                           {
+                               int rgb = new Color(100, 0, 100).getRGB();
+                               bfImage.setRGB(i, j, rgb);
+                               break;
+                           }
+                       case 2:
+                           {
+                               int rgb = new Color(255, 0, 0).getRGB();
+                               bfImage.setRGB(i, j, rgb);
+                               break;
+                           }
+                       case 3:
+                           {
+                               int rgb = new Color(0, 0, 255).getRGB();
+                               bfImage.setRGB(i, j, rgb);
+                               break;
+                           }
+                       default:
+                           break;
+                   }
+               }
+            }
+  
+            image = new File("src\\main\\java\\images\\output"+generation+".png");
+            ImageIO.write(bfImage, "png", image);
+            
+        } catch (IOException e) {
+            System.out.println("Me caí");
+            System.out.println(e);
+        }
+    
+    
+    }
+    
+    public void printMatrix(){
+        
+        for(int i = 0; i<matrix.length;i++){
+            for(int j = 0; j<matrix[i].length;j++){
+                System.out.print(matrix[i][j]+" ");
+            }
+            System.out.println("");
+
+        }
+    }
+    
 }

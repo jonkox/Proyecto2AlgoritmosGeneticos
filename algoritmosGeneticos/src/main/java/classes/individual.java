@@ -19,7 +19,10 @@ public class Individual {
         this.y = y;
         this.father = null;
         this.mother = null;
-        generation = 0; // First genration
+        generation = 0; // First generation
+        this.incomplete_score = 0;
+        this.final_score = 0;
+        
     }
     
     // For general generations. Gets parents as parameters.
@@ -42,6 +45,8 @@ public class Individual {
         }
         
         generation = father.generation + 1;
+        this.incomplete_score = 0;
+        this.final_score = 0;
     }
     
     
@@ -74,19 +79,46 @@ public class Individual {
     /* Calculates the fitness score without taking into account the neighbors score
     Saves the result in the variable incomplete_score
     */
-    public void calculateIncompleteScore(){
-        /*
-        if(isOnWhite()){
-            // At least it is on a white position, there it will get a score over 0, good or bad
-            
-            // Checks if it is on dead end
-            if(isOnDeadEnd()){
-                incomplete_score = 1;
-            }
-                   
+    public void calculateIncompleteScore(int matrix[][], int radio){
+        
+        switch (matrix[x][y]) {
+            case 0:
+                
+                if (lookAround(radio, matrix, 1)) {
+                    incomplete_score = 10;
+                }
+                else{
+                    incomplete_score = 0;
+                }
+               
+                break;
+            case 1:
+                if (lookAround(radio, matrix, 0)) {
+                    incomplete_score = 25;
+                }
+                else{
+                    incomplete_score = 30;
+                }
+                break;
+            case 2:
+                if (lookAround(radio, matrix, 2)) {
+                    incomplete_score = 50;
+                }
+                break;
+            case 3:
+                if (lookAround(radio, matrix, 3)) {
+                    incomplete_score = 15;
+                }
+                else{
+                    incomplete_score = 20;
+                }
+                break;
+
+            default:
+                break;
         }
         
-        // The else will be it is in black, is left with the default 0*/
+        // The else will be it is in black, is left with the default 0
         
     }
     
@@ -227,4 +259,91 @@ public class Individual {
                   // Recursive function that returns geonology organized by generations
         printTree(getGeonolgyAux(this, geonology));  // Visually prints the tree
     }
+    
+    // Calculates the fitness score without taking into account the neighbors score
+    /*public void calculateIncompleteScore(){
+        if(isOnWhite()){
+            // At least it is on a white position, there it will get a score over 0, good or bad
+            
+            // Checks if it is on dead end
+            if(isOnDeadEnd()){
+                incomplete_score = 1;
+            }
+                   
+        }
+        
+        // The else will be it is in black, is left with the default 0
+        
+    }*/
+    
+    // Calculates the fitness score taking into account the neighbors score
+    public void calculateFitnessScore(Individual _individual, int[][] matrix){}
+
+    public boolean lookAround(int radio, int matrix[][], int watchFor){
+        int auxX = x;
+        int auxY = y;
+
+        
+        try {
+            x = x - (radio+1);
+            y = y - (radio+1);
+            
+            for (int i = this.x; i < auxX + radio; i++) {
+                for (int j = this.y; j < auxY + radio; j++) {
+                    System.out.print(matrix[i][j]);
+                    if (matrix[i][j] == watchFor) {
+                        return true;
+                    }
+                    
+                }
+                System.out.println("");
+            }
+            
+            
+        } catch (IndexOutOfBoundsException exception) {
+            if (x < 0) {
+                x = 0;
+                System.out.println("x es menos que 0");
+            }
+            else if (y < 0) {
+                y = 0;
+                System.out.println("y es menos de 0");
+            }
+            else if (y + radio > matrix.length || x + radio > matrix[x].length) {
+                System.out.println("se sale del limite");
+                for (int i = this.x; i < matrix.length; i++) {
+                    for (int j = this.y; j < matrix[i].length; j++) {
+                        /*
+                        if (matrix[i][j] == watchFor) {
+                            return true;
+                        }*/
+                    }
+                }
+            }
+            
+            /*
+            for (int i = this.x; i < auxX + radio; i++) {
+                for (int j = this.y; j < auxY + radio; j++) {
+                    System.out.print(matrix[i][j]);
+                    
+                    if (matrix[i][j] == watchFor) {
+                        return true;
+                    }
+
+                }
+                System.out.println("");
+            }*/
+        }
+           
+        
+        this.x = auxX;
+        this.y = auxY;
+        
+        return false;
+        
+    
+    }
+    
+
+
 }

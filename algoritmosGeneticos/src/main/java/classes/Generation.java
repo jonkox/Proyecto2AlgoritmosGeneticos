@@ -65,10 +65,10 @@ public class Generation {
     }
     
     // Gives a fitness score to all the individuals of the generation
-    public void ApplyFitnessScore(int visionRange){
+    public void ApplyFitnessScore(int visionRange, int matrix[][]){
         // Sets to all the individuals a protype fitness score without taking into account the neighbors
         for (Individual individual : individuals){
-            individual.calculateIncompleteScore();
+            individual.calculateIncompleteScore(matrix, visionRange);
         }
         
         // Sets to all the individuals the real fitness score taking into account the neighbors data
