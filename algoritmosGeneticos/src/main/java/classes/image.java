@@ -72,7 +72,7 @@ public final class Image {
                         matrix[i][j] = 2;
                     }
                     else if (R == 0 && G == 0 & B == 255) {
-                        matrix[i][j] = 3;
+                        matrix[i][j] = 2;
                     }
                     else{
                         matrix[i][j] = 0;
@@ -94,7 +94,7 @@ public final class Image {
         try {
             //instance variables
             image = new File("src\\main\\java\\images\\output1.png");
-            bfImage = new BufferedImage(50,50,BufferedImage.TYPE_INT_ARGB);
+            bfImage = new BufferedImage(row,column,BufferedImage.TYPE_INT_ARGB);
             bfImage = ImageIO.read(image);
 
             

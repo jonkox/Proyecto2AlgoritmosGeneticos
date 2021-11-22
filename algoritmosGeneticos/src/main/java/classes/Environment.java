@@ -66,7 +66,13 @@ public final class Environment {
     private void createNewGeneration(){
         // Gets the last generation, these will be the parents of the new gneration
         Generation lastGeneration = generationsList.get(generationsList.size()-1);
-                                      
+
+                                      /* This number is how many pixels of range an individual has to search for neighbors
+                                         |
+                                         V  */
+        //lastGeneration.ApplyFitnessScore(5);  // Tells the parents generation to give all the individuals a fitness score to be ready for the selection
+        
+
         // Creates the generation container for the new ones
         Generation newGeneration = new Generation(amount_individuals);  
         

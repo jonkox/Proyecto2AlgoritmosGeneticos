@@ -21,7 +21,7 @@ public final class Individual {
         generation = 0; // First genration
         
         // incomplete_score
-        calculateIncompleteScore();  // Sets an initial fitness score to this individual without taking into account the individuals
+        //calculateIncompleteScore();  // Sets an initial fitness score to this individual without taking into account the individuals
     }
     
     // For general generations. Gets parents as parameters.
@@ -46,7 +46,7 @@ public final class Individual {
         generation = father.generation + 1;
         
         // incomplete_score
-        calculateIncompleteScore();  // Sets an initial fitness score to this individual without taking into account the individuals
+        //calculateIncompleteScore();  // Sets an initial fitness score to this individual without taking into account the individuals
     }
     
     
@@ -148,19 +148,7 @@ public final class Individual {
                 }
                 
                 break;
-                
-                
-            case 3:  // Blue (Start)
-                if (lookAround(radio, matrix, 3)) {
-                    incomplete_score = 15;
-                }
-                else{
-                    incomplete_score = 20;
-                }
-                
-                break;
-
-                
+     
             default:
                 break;
         }
@@ -325,72 +313,5 @@ public final class Individual {
     
     // Calculates the fitness score taking into account the neighbors score
     public void calculateFitnessScore(Individual _individual, int[][] matrix){}
-
-    public boolean lookAround(int radio, int matrix[][], int watchFor){
-        int auxX = x;
-        int auxY = y;
-
-        
-        try {
-            x = x - (radio+1);
-            y = y - (radio+1);
-            
-            for (int i = this.x; i < auxX + radio; i++) {
-                for (int j = this.y; j < auxY + radio; j++) {
-                    System.out.print(matrix[i][j]);
-                    if (matrix[i][j] == watchFor) {
-                        return true;
-                    }
-                    
-                }
-                System.out.println("");
-            }
-            
-            
-        } catch (IndexOutOfBoundsException exception) {
-            if (x < 0) {
-                x = 0;
-                System.out.println("x es menos que 0");
-            }
-            else if (y < 0) {
-                y = 0;
-                System.out.println("y es menos de 0");
-            }
-            else if (y + radio > matrix.length || x + radio > matrix[x].length) {
-                System.out.println("se sale del limite");
-                for (int i = this.x; i < matrix.length; i++) {
-                    for (int j = this.y; j < matrix[i].length; j++) {
-                        /*
-                        if (matrix[i][j] == watchFor) {
-                            return true;
-                        }*/
-                    }
-                }
-            }
-            
-            /*
-            for (int i = this.x; i < auxX + radio; i++) {
-                for (int j = this.y; j < auxY + radio; j++) {
-                    System.out.print(matrix[i][j]);
-                    
-                    if (matrix[i][j] == watchFor) {
-                        return true;
-                    }
-
-                }
-                System.out.println("");
-            }*/
-        }
-           
-        
-        this.x = auxX;
-        this.y = auxY;
-        
-        return false;
-        
-    
-    }
-    
-
 
 }
