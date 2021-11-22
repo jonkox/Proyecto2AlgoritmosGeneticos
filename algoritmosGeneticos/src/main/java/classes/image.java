@@ -13,7 +13,7 @@ import javax.imageio.stream.ImageInputStream;
  *
  * @author Jhonny Diaz
  */
-public class Image {
+public final class Image {
     public int matrix[][];
     public int row;
     public int column;

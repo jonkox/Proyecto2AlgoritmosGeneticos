@@ -3,7 +3,7 @@ package classes;
 
 import java.util.ArrayList;
 
-public class Individual {
+public final class Individual {
     // Attributes
     public int x, y;  // Position (Genes), cant be final (constant) due to mutations
     private final int generation;  // Which generation this individual belongs, first gen, second gen, third gen, ...
@@ -17,12 +17,11 @@ public class Individual {
     public Individual(int x, int y){
         this.x = x;
         this.y = y;
-        this.father = null;
-        this.mother = null;
-        generation = 0; // First generation
-        this.incomplete_score = 0;
-        this.final_score = 0;
+        father = mother = null;
+        generation = 0; // First genration
         
+        // incomplete_score
+        calculateIncompleteScore();  // Sets an initial fitness score to this individual without taking into account the individuals
     }
     
     // For general generations. Gets parents as parameters.
@@ -45,8 +44,9 @@ public class Individual {
         }
         
         generation = father.generation + 1;
-        this.incomplete_score = 0;
-        this.final_score = 0;
+        
+        // incomplete_score
+        calculateIncompleteScore();  // Sets an initial fitness score to this individual without taking into account the individuals
     }
     
     
@@ -62,16 +62,54 @@ public class Individual {
         int option = (int)Math.floor(Math.random()*100);
         
         if(option < 45){
-            // Has a 45% chance of mutating the x position
+            // Has a 45% chance of mutating the x (gene) position
             x = (int)Math.floor(Math.random()*x_limit+1);
         } else if (option < 90){
-            // Has another 45% chance of mutating the y position
+            // Has another 45% chance of mutating the y (gene) position
             y = (int)Math.floor(Math.random()*y_limit+1);
         } else {
-            // Finally has a 10% chance of mutating both, the x and y positions
+            // Finally has a 10% chance of mutating both, the x and y (genes) positions
             x = (int)Math.floor(Math.random()*x_limit+1);
             y = (int)Math.floor(Math.random()*y_limit+1);
         }
+    }
+    
+    
+    
+    
+    private boolean lookAround(int radio, int matrix[][], int watchFor){
+        int auxX = x;
+        int auxY = y;
+    
+        auxX = x - (radio+1);
+        auxY = y - (radio+1);
+
+        // to avoid recalculating these in every check of the stop condition in every iteration
+        int x_limit = x + radio;  
+        int y_limit = y + radio;  
+
+        for (int i = auxX; i < x_limit ; i++) {
+            for (int j = auxY; j < y_limit; j++) {
+                try {
+                    if (matrix[i][j] == watchFor) {
+                        return true;
+                    }
+                 } catch (IndexOutOfBoundsException exception) {
+                    if (auxX < 0) {
+                        auxX = 0;
+                    }
+                    else if (auxY < 0) {
+                        auxY = 0;
+                    }
+                    else if (auxY + radio > matrix.length || auxY + radio > matrix[x].length) {
+                        System.out.println("se sale del limite");
+                    }
+                }
+
+            }
+        }
+            
+        return false;
     }
     
   
@@ -80,9 +118,8 @@ public class Individual {
     Saves the result in the variable incomplete_score
     */
     public void calculateIncompleteScore(int matrix[][], int radio){
-        
-        switch (matrix[x][y]) {
-            case 0:
+          switch (matrix[x][y]) {
+            case 0:  // Black
                 
                 if (lookAround(radio, matrix, 1)) {
                     incomplete_score = 10;
@@ -92,28 +129,38 @@ public class Individual {
                 }
                
                 break;
-            case 1:
+                
+                
+            case 1:  // White
                 if (lookAround(radio, matrix, 0)) {
                     incomplete_score = 25;
                 }
                 else{
                     incomplete_score = 30;
                 }
+                
                 break;
-            case 2:
+                
+                
+            case 2:  // Red (Ending)
                 if (lookAround(radio, matrix, 2)) {
                     incomplete_score = 50;
                 }
+                
                 break;
-            case 3:
+                
+                
+            case 3:  // Blue (Start)
                 if (lookAround(radio, matrix, 3)) {
                     incomplete_score = 15;
                 }
                 else{
                     incomplete_score = 20;
                 }
+                
                 break;
 
+                
             default:
                 break;
         }

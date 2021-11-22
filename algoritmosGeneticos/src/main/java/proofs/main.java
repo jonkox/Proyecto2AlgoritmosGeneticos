@@ -15,7 +15,7 @@ import java.rmi.activation.ActivationGroupID;
  *
  * @author Jhonny Diaz
  */
-public class main {
+public final class main {
     
 
     /**

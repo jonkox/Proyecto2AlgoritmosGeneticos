@@ -1,12 +1,12 @@
 
 package classes;
-import classes.Individual;
 
-public class Generation {
+public final class Generation {
     // Attibutes
     private final Individual[] individuals;  // Holds all the individuals produced in this generation
     private Individual[] selectionRoulette;  // Algoritmos Genéticos - Semana 11 - Page 3
     private final int amount_individuals;
+    public float generation_average;
     
     // Constructor
     public Generation(int amountIndividuals){
@@ -38,11 +38,13 @@ public class Generation {
     Finally filling the 100 spaces according to the scores of each individual
     */
     private void fillGenerationRoulette(float sum){
-        // Goes individual by individual
+        int limit;  // Helps to know from where to where an individula will occupy on the roulette
         int i = 0;
+        
+        // Goes individual by individual
         for (Individual individual : individuals){
                             // Gets the normalized score of the current individual
-            int limit = i+individual.setNormalizedScore(sum); 
+            limit = i+individual.setNormalizedScore(sum); 
             
             // Fills the spaces the current individual desreves on the roulette
             while (i < limit){
@@ -65,18 +67,14 @@ public class Generation {
     }
     
     // Gives a fitness score to all the individuals of the generation
-    public void ApplyFitnessScore(int visionRange, int matrix[][]){
-        // Sets to all the individuals a protype fitness score without taking into account the neighbors
-        for (Individual individual : individuals){
-            individual.calculateIncompleteScore(matrix, visionRange);
-        }
-        
+    public void ApplyFitnessScore(int visionRange){
         // Sets to all the individuals the real fitness score taking into account the neighbors data
         float sum = 0;  // Gets the sum of the fitness scores of all the individuals
         for (Individual individual : individuals){
             sum += individual.calculateFitnessScore(visionRange);
         }
 
+        generation_average = sum / amount_individuals; // Sets the average score of the generation
         fillGenerationRoulette(sum);
     }
     
