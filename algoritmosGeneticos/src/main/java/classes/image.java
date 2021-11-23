@@ -46,8 +46,8 @@ public final class Image {
             
             
             //the cycle which goes for all pixels
-            for(int i = 0; i<bfImage.getHeight();i++){
-                for(int j = 0; j<bfImage.getWidth();j++){
+            for(int i = 0; i<row;i++){
+                for(int j = 0; j<column;j++){
                     
                     
                     int srcPixel = bfImage.getRGB(i, j); //take the pixel
@@ -63,25 +63,25 @@ public final class Image {
 
                     //assign and write the code of the color
                     if (R == 0 && G == 0 && B == 0) {
-                        matrix[i][j] = 0;
+                        matrix[j][i] = 0;
                     }
                     else if (R == 255 && G == 255 & B == 255) {
-                        matrix[i][j] = 1;
+                        matrix[j][i] = 1;
                     }
                     else if (R == 255 && G == 0 & B == 0) {
-                        matrix[i][j] = 2;
+                        matrix[j][i] = 2;
                     }
                     else if (R == 0 && G == 0 & B == 255) {
-                        matrix[i][j] = 2;
+                        matrix[j][i] = 2;
                     }
                     else{
-                        matrix[i][j] = 0;
+                        matrix[j][i] = 0;
                     }   
                 }
             }
             
         } catch (IOException e) {
-            System.out.println("Me caí");
+            System.out.println(e);
         }
     }
     
@@ -99,7 +99,7 @@ public final class Image {
 
             
         } catch (IOException e) {
-            System.out.println("Me caí");
+            
             System.out.println(e);
         }
         
