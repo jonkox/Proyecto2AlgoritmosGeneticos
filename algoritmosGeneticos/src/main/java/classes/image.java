@@ -42,7 +42,7 @@ public final class Image {
             row = bfImage.getHeight();
             column = bfImage.getWidth();
             matrix = new int[row][column];
-            System.out.println("fila  " + row + "  columnas  " + column);
+            //System.out.println("fila  " + row + "  columnas  " + column);
             
             
             //the cycle which goes for all pixels
