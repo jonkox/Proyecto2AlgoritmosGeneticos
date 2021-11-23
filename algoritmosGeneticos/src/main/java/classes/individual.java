@@ -7,25 +7,29 @@ public final class Individual {
     // Attributes
     public int x, y;  // Position (Genes), cant be final (constant) due to mutations
     private final int generation;  // Which generation this individual belongs, first gen, second gen, third gen, ...
+    private final int radio; // Vision rate used several times in the fitness score methods
     public float incomplete_score, final_score, normalized_score;  // Needed to calculate the fitness score
     private final Individual father, mother; // Parents
+    private final int[][] matrix;  // Map (matrix) that contains the individual and its environment, used several times in the fitness score methods
     
     
     // Constructors
     
     // For first generation. Doesnt get parents, they are in null. Are created on a random position
-    public Individual(int x, int y){
+    public Individual(int x, int y, int radio, int[][] matrix){
+        this.matrix = matrix;
+        this.radio = radio;
         this.x = x;
         this.y = y;
         father = mother = null;
         generation = 0; // First genration
         
         // incomplete_score
-        //calculateIncompleteScore();  // Sets an initial fitness score to this individual without taking into account the individuals
+        calculateIncompleteScore();  // Sets an initial fitness score to this individual without taking into account the individuals
     }
     
     // For general generations. Gets parents as parameters.
-    public Individual(Individual father, Individual mother){
+    public Individual(Individual father, Individual mother, int mutationIndex){
         this.father = father;
         this.mother = mother;
         
@@ -43,10 +47,17 @@ public final class Individual {
             y = father.y;
         }
         
+        int mutatationNumber = (int)Math.floor(Math.random()*100);
+        if (mutatationNumber < mutationIndex){
+            mutate();
+        }
+        
         generation = father.generation + 1;
+        this.matrix = father.matrix;
+        this.radio = father.radio;
         
         // incomplete_score
-        //calculateIncompleteScore();  // Sets an initial fitness score to this individual without taking into account the individuals
+        calculateIncompleteScore();  // Sets an initial fitness score to this individual without taking into account the individuals
     }
     
     
@@ -58,58 +69,74 @@ public final class Individual {
     A gen(position) randomly changes
     It can change the x position, y position or in rare cases both can mutate
     */
-    public void mutate(int x_limit, int y_limit){
+    public void mutate(){
+        int x_limit = matrix[0].length;
+        int y_limit = matrix.length;
+        
         int option = (int)Math.floor(Math.random()*100);
         
         if(option < 45){
             // Has a 45% chance of mutating the x (gene) position
-            x = (int)Math.floor(Math.random()*x_limit+1);
+            x = (int)Math.floor(Math.random()*x_limit);
         } else if (option < 90){
             // Has another 45% chance of mutating the y (gene) position
-            y = (int)Math.floor(Math.random()*y_limit+1);
+            y = (int)Math.floor(Math.random()*y_limit);
         } else {
             // Finally has a 10% chance of mutating both, the x and y (genes) positions
-            x = (int)Math.floor(Math.random()*x_limit+1);
-            y = (int)Math.floor(Math.random()*y_limit+1);
+            x = (int)Math.floor(Math.random()*x_limit);
+            y = (int)Math.floor(Math.random()*y_limit);
         }
     }
     
     
     
-    
-    private boolean lookAround(int radio, int matrix[][], int watchFor){
+    /*Checks the environment around it
+    DOESNT check the neighborgs
+    Checks if the pixels around are part of of the path, start, ending ot black
+    To see if this position is part of a good area
+    This adds a certain value to the individual*/
+    private int lookAround(){
+        int addedScore = 0;  // Value to return
+        
         int auxX = x;
         int auxY = y;
     
-        auxX = x - (radio+1);
-        auxY = y - (radio+1);
+        auxX = x - (radio+1); // Moves to start at the left of the individual
+        auxY = y - (radio+1);  // Moves to start up from the individual
 
         // to avoid recalculating these in every check of the stop condition in every iteration
-        int x_limit = x + radio;  
-        int y_limit = y + radio;  
+        int x_limit = x + radio;  // Stops at the right of the individual
+        int y_limit = y + radio;  // Stops under the individual
+        
+        int currentPixel;
 
         for (int i = auxX; i < x_limit ; i++) {
             for (int j = auxY; j < y_limit; j++) {
                 try {
-                    if (matrix[i][j] == watchFor) {
-                        return true;
+                    currentPixel = matrix[i][j];
+                    if (currentPixel == 0) {
+                        // Is black, bad. We add 0 so we dont do anything
+                        continue;
+                    } else if (currentPixel == 1){
+                        // Is white, very good
+                        addedScore += 2;
                     }
+                    
+                    else {
+                        // Is red, kind of good
+                        addedScore++;
+                    }
+                    
                  } catch (IndexOutOfBoundsException exception) {
-                    if (auxX < 0) {
-                        auxX = 0;
-                    }
-                    else if (auxY < 0) {
-                        auxY = 0;
-                    }
-                    else if (auxY + radio > matrix.length || auxY + radio > matrix[x].length) {
-                        System.out.println("se sale del limite");
-                    }
+                     /* Got out of the matrix, we take as 0
+                     We add 0, so we dont add anything*/
+                    continue; 
                 }
 
             }
         }
             
-        return false;
+        return addedScore;
     }
     
   
@@ -117,52 +144,102 @@ public final class Individual {
     /* Calculates the fitness score without taking into account the neighbors score
     Saves the result in the variable incomplete_score
     */
-    public void calculateIncompleteScore(int matrix[][], int radio){
-          switch (matrix[x][y]) {
+    public void calculateIncompleteScore(){
+        // Calculates an initial score according the pixels behind the individual
+        switch (matrix[x][y]) {
             case 0:  // Black
-                
-                if (lookAround(radio, matrix, 1)) {
-                    incomplete_score = 10;
-                }
-                else{
-                    incomplete_score = 0;
-                }
-               
+                incomplete_score = 0;  // Base score is low, black is very bad
                 break;
                 
                 
             case 1:  // White
-                if (lookAround(radio, matrix, 0)) {
-                    incomplete_score = 25;
-                }
-                else{
-                    incomplete_score = 30;
-                }
-                
+                incomplete_score = 25;  // Base score is high, white is inside the path very good
                 break;
                 
                 
-            case 2:  // Red (Ending)
-                if (lookAround(radio, matrix, 2)) {
-                    incomplete_score = 50;
-                }
-                
-                break;
-     
-            default:
+            default:  // Is red(start or ending)
+                incomplete_score = 15;  // Red is medium, we want to be near the start or end but not inside it
                 break;
         }
-        
-        // The else will be it is in black, is left with the default 0
-        
+          incomplete_score += lookAround();  // Adds values according to the surroundings
     }
+    
+    
+    /*Checks the neighborgs
+    Checks the scores of the neighborgs to see if it is part of the good individuals
+    This adds a certain value to the individual*/
+    private int lookForNeighborgs(Individual[] individuals){
+        int addedScore = 0;  // Value to return
+        
+        int auxX = x;
+        int auxY = y;
+    
+        auxX = x - (radio+1); // Moves to start at the left of the individual
+        auxY = y - (radio+1);  // Moves to start up from the individual
+
+        // to avoid recalculating these in every check of the stop condition in every iteration
+        int x_limit = x + radio;  // Stops at the right of the individual
+        int y_limit = y + radio;  // Stops under the individual
+        
+        int i_maxBound = matrix.length;
+        int j_maxBound = matrix[0].length;
+        
+        int x_closeness;
+        int y_closeness;
+        for (int i = auxX; i < x_limit ; i++) {
+            x_closeness = 1;
+            for (int j = auxY; j < y_limit; j++) {
+                y_closeness = 1;
+                
+                if(i < i_maxBound && j < j_maxBound) {
+                    for (Individual individual : individuals){
+                        if(i == individual.x && j == individual.y){
+                                                                      // The closer the neighbor is to this individual, the higher its added score gets
+                            addedScore += individual.incomplete_score*(y_closeness+x_closeness);
+                            break;
+                        }
+                    }
+                    
+                 } else {
+                     /* Got out of the matrix, we take as 0
+                     We add 0, so we dont add anything*/
+                    break; // We are already out, we pass to the next line
+                }
+                
+                
+                // Tells how close vertically the neighbor of the next iteration is to the current individual
+                if(j > y){
+                    // Is getting futher
+                    y_closeness--;
+                } else {
+                    // Is getting closer
+                    y_closeness++;
+                }
+                
+            }
+            
+            // Tells how close vertically the neighbor of the next iteration is to the current individual
+            if(i > x){
+                // Is getting futher
+                    x_closeness--;
+                } else {
+                    // Is getting closer
+                    x_closeness++;
+                }
+        }
+            
+        return addedScore;
+    }
+    
+    
     
     /* Calculates the fitness score taking into account the neighbors score
     The parameter visionRange tells how many pixels away an individual can search for neighbors
     It he individual can see at the most 3 pixels from itslef, or 5 pixels from itself...
     Saves the result of the fitness score in the final_score variable and returns that value
     */
-    public float calculateFitnessScore(int visionRange){
+    public float calculateFitnessScore(Individual[] individuals){
+        final_score = incomplete_score + lookForNeighborgs(individuals);
         return final_score;
     }
     

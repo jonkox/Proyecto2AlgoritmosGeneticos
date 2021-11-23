@@ -5,14 +5,16 @@ public final class Generation {
     // Attibutes
     private final Individual[] individuals;  // Holds all the individuals produced in this generation
     private Individual[] selectionRoulette;  // Algoritmos Genéticos - Semana 11 - Page 3
-    private final int amount_individuals;
-    public float generation_average;
+    private final int amount_individuals;  // How many individuals this genration will have
+    public float generation_average;  // Average score from 0 to 0.99 of all the individuals of this generation 
+    private final int[][] matrix;  // Map (matrix) that contains the individuals and their environment, used several times in the fitness score methods
     
     // Constructor
-    public Generation(int amountIndividuals){
+    public Generation(int amountIndividuals, int[][] matrix){
         this.amount_individuals = amountIndividuals;
         individuals = new Individual[amountIndividuals];
         selectionRoulette = new Individual[100];
+        this.matrix = matrix;
     }
     
     
@@ -38,7 +40,7 @@ public final class Generation {
     Finally filling the 100 spaces according to the scores of each individual
     */
     private void fillGenerationRoulette(float sum){
-        int limit;  // Helps to know from where to where an individula will occupy on the roulette
+        int limit;  // Helps to know from where to where an individul will occupy on the roulette
         int i = 0;
         
         // Goes individual by individual
@@ -67,11 +69,11 @@ public final class Generation {
     }
     
     // Gives a fitness score to all the individuals of the generation
-    public void ApplyFitnessScore(int visionRange){
+    public void ApplyFitnessScore(){
         // Sets to all the individuals the real fitness score taking into account the neighbors data
         float sum = 0;  // Gets the sum of the fitness scores of all the individuals
         for (Individual individual : individuals){
-            sum += individual.calculateFitnessScore(visionRange);
+            sum += individual.calculateFitnessScore(individuals);
         }
 
         generation_average = sum / amount_individuals; // Sets the average score of the generation

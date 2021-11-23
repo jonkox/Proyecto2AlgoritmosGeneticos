@@ -1,19 +1,27 @@
 
 package classes;
 import java.util.ArrayList;
+import org.w3c.dom.events.MutationEvent;
 
 public final class Environment {
     // Attributes
     private final int x_size, y_size;  // Limits of the image
     private final int amount_individuals;  // How many individuals we want per generation
-    public ArrayList<Generation> generationsList = new ArrayList<Generation>();  // Holds all the generations that had been created
+    public ArrayList<Generation> generationsList;  // Holds all the generations that had been created
+    private final int[][] matrix;  // Map (matrix) that contains the individuals and their environment, recreation of hte image
+    private final int radio;  //Vision of the individuals when running the fitness score methods
+    private final int mutation_index;  // The chance of an individual to mutate
     
     
     // Constructor
-    public Environment(int amount_individuals, int x_size, int y_size){
+    public Environment(int amount_individuals, int[][] matrix, int radio, int mutation_index){
         this.amount_individuals = amount_individuals;
-        this.x_size = x_size;
-        this.y_size = y_size;
+        this.matrix = matrix;
+        this.y_size = matrix.length;
+        this.x_size = matrix[0].length;
+        generationsList = new ArrayList<Generation>();
+        this.radio = radio;
+        this.mutation_index = mutation_index;
     }
     
     
@@ -23,16 +31,16 @@ public final class Environment {
     Auxiliary method for makeFirstGeneration()*/
     private Individual createFistGenIndividual(){
         // Creates a random position
-        int x = (int)Math.floor(Math.random()*(x_size+1));
-        int y = (int)Math.floor(Math.random()*(y_size+1));
+        int x = (int)Math.floor(Math.random()*(x_size));
+        int y = (int)Math.floor(Math.random()*(y_size));
         
         // Creates and returns a new individual
-        return new Individual(x, y);
+        return new Individual(x, y, radio, matrix);
     }
     
     // Creates n new individuals randomly to start the program
     private void makeFirstGeneration(){
-        Generation gen1 = new Generation(amount_individuals);  // Creates the generation container
+        Generation gen1 = new Generation(amount_individuals, matrix);  // Creates the generation container
         
         // Adds n individuals
         for(int i = 0; i < amount_individuals; i++){
@@ -40,11 +48,8 @@ public final class Environment {
             gen1.addIndividual(createFistGenIndividual(), i);
         }
         
-        /* Gives all the individuals of the generation the fitness score to have it ready for the next generation
-        This number is how many pixels of range an individual has to search for neighbors
-                               |
-                               V  */
-        gen1.ApplyFitnessScore(5);  // Tells the parents generation to give all the individuals a fitness score to be ready for the selection
+        // Gives all the individuals of the generation the fitness score to have it ready for the next generation
+        gen1.ApplyFitnessScore();  // Tells the parents generation to give all the individuals a fitness score to be ready for the selection
         
         generationsList.add(gen1);  // We store this generation we just have created in our list
     }
@@ -57,7 +62,7 @@ public final class Environment {
         Individual mother = lastGeneration.selectIndividual();
         
         // Creates a new individual (children) based on the parents and returns it
-        return new Individual(father, mother);
+        return new Individual(father, mother, mutation_index);
     }
     
     
@@ -65,16 +70,10 @@ public final class Environment {
     // Creates a new generation (of children) based on the preexisting parents
     private void createNewGeneration(){
         // Gets the last generation, these will be the parents of the new gneration
-        Generation lastGeneration = generationsList.get(generationsList.size()-1);
-
-                                      /* This number is how many pixels of range an individual has to search for neighbors
-                                         |
-                                         V  */
-        //lastGeneration.ApplyFitnessScore(5);  // Tells the parents generation to give all the individuals a fitness score to be ready for the selection
-        
+        Generation lastGeneration = generationsList.get(generationsList.size()-1);     
 
         // Creates the generation container for the new ones
-        Generation newGeneration = new Generation(amount_individuals);  
+        Generation newGeneration = new Generation(amount_individuals, matrix);  
         
         // Creates n new individuals (children)
         for(int i = 0; i < amount_individuals; i++){
@@ -83,11 +82,8 @@ public final class Environment {
         }
         
         
-        /* Gives all the individuals of the generation we have just created the fitness score to have it ready for the next generation
-        This number is how many pixels of range an individual has to search for neighbors
-                                        |
-                                        V  */
-        newGeneration.ApplyFitnessScore(5);  // Tells the parents generation to give all the individuals a fitness score to be ready for the selection
+        // Gives all the individuals of the generation we have just created the fitness score to have it ready for the next generation
+        newGeneration.ApplyFitnessScore();  // Tells the parents generation to give all the individuals a fitness score to be ready for the selection
         
         generationsList.add(newGeneration);  // We store this generation we have just created in our list
     }
@@ -101,7 +97,7 @@ public final class Environment {
     It receives as parameter the minimum score a generation has to reach
     It receives as parameter the max amount of wrong generations the user will tolerate before restarting the simulation
     */
-    public void initMinimum(float min_score, int max_wrong){
+    public void initMinimumScore(float min_score, int max_wrong){
         boolean hasToRestart;  // Flag variable
         
         do{ // A do-while because we need to run it at least once and its a loop because we may need to restart the simulation
