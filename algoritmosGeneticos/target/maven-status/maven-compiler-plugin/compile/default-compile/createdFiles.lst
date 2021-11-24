@@ -1,10 +1,10 @@
+classes\Generation.class
+classes\Environment.class
+GUI\MainWindow$1.class
 GUI\MainWindow.class
 GUI\MainWindow$2.class
 GUI\MainWindow$3.class
-classes\Generation.class
 proofs\main.class
-classes\Environment.class
-GUI\MainWindow$1.class
 GUI\ShowMaps$2.class
 classes\Image.class
 GUI\ShowMaps$1.class

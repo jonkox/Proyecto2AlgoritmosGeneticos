@@ -22,6 +22,22 @@ public final class main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        Image im = new Image();
+        im.getImageInfo("src\\main\\java\\images\\mapa5.png");
+        
+        Environment hola = new Environment(8, im.matrix, 3, 5);
+        
+        hola.makeFirstGeneration();
+        
+        for (int i = 0; i < 500; i++) {
+            int t = (int)Math.floor(Math.random()*7);
+            System.out.println(t);
+            if (t >= 7) {
+                
+              System.out.println("acaaaaaaaaaa");  
+            }
+             
+        }
         
 
     }

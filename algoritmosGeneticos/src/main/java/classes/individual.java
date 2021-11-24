@@ -33,6 +33,7 @@ public final class Individual {
         this.father = father;
         this.mother = mother;
         
+        this.matrix = father.matrix;
         // Determines if which position is taken from the father and which is taken from the mother
         int order = (int)Math.floor(Math.random()*2);
         
@@ -53,7 +54,7 @@ public final class Individual {
         }
         
         generation = father.generation + 1;
-        this.matrix = father.matrix;
+        
         this.radio = father.radio;
         
         // incomplete_score
@@ -252,7 +253,7 @@ public final class Individual {
     */
     public int setNormalizedScore(float sumResult){
         normalized_score = final_score / sumResult;
-        return (int) normalized_score*100;
+        return (int) (normalized_score*100);
     }
     
     /*Prints spaces

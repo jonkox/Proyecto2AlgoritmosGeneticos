@@ -130,6 +130,7 @@ public final class MainWindow extends javax.swing.JFrame {
         // TODO add your handling code here:
         imageController.getImageInfo("src\\main\\java\\images\\" + jComboBoxMaps.getSelectedItem().toString());
         _showMaps = new ShowMaps(imageController.matrix);
+        this.setVisible(false);
         _showMaps.setVisible(true);
         
         
