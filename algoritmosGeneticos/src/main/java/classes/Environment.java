@@ -1,7 +1,6 @@
 
 package classes;
 import java.util.ArrayList;
-import GUI.ShowMaps;
 
 public final class Environment {
     // Attributes
@@ -40,7 +39,7 @@ public final class Environment {
     
     // Creates n new individuals randomly to start the program
     public void makeFirstGeneration(){
-        Generation gen1 = new Generation(amount_individuals, matrix);  // Creates the generation container
+        Generation gen1 = new Generation(amount_individuals);  // Creates the generation container
         
         // Adds n individuals
         for(int i = 0; i < amount_individuals; i++){
@@ -73,12 +72,28 @@ public final class Environment {
         Generation lastGeneration = generationsList.get(generationsList.size()-1);     
 
         // Creates the generation container for the new ones
-        Generation newGeneration = new Generation(amount_individuals, matrix);  
+        Generation newGeneration = new Generation(amount_individuals);
+        Individual newInd;
+        boolean canBeAdded;
         
         // Creates n new individuals (children)
         for(int i = 0; i < amount_individuals; i++){
             // Adds a new individual (children)
-            newGeneration.addIndividual(createIndividual(lastGeneration), i);
+            newInd = createIndividual(lastGeneration);
+            canBeAdded = true;
+            for(Individual comparisonInd : newGeneration.individuals){
+                if(comparisonInd == null){
+                    break;
+                }
+                if(comparisonInd.x == newInd.x && comparisonInd.y == newInd.y){
+                    i--;
+                    canBeAdded = false;
+                    break;
+                }
+            }
+            if(canBeAdded){
+                newGeneration.addIndividual(newInd, i);
+            }
         }
         
         

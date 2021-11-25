@@ -7,7 +7,6 @@ package GUI;
 
 import java.awt.Color;
 import classes.Environment;
-import classes.Generation;
 import classes.Individual;
 
 /**
@@ -19,8 +18,9 @@ public class ShowMaps extends javax.swing.JFrame {
     private javax.swing.JButton[][] btnPixels;
     private int[][] matrix;
     private Environment env;
-    private Individual _Individual;
-    private boolean freeze;
+    private int generationsToCheck;
+    private float percentage_similarity;
+    private boolean areDifferent;  // Used for the stop condtion
     
     /**
      * Creates new form ShowMaps
@@ -30,19 +30,28 @@ public class ShowMaps extends javax.swing.JFrame {
         initComponents();
     }
     public ShowMaps(int matrix[][]) {
+        areDifferent = true; 
+        
         createButtons(matrix.length, matrix[0].length);
         printMap(matrix);
         
         initComponents();
         this.getContentPane().setBackground(new Color(64,64,150));
         btnStop.setBackground(Color.red);
+        cmbGeneration.setEnabled(false);
+        cmbIndividual.setEnabled(false);
         this.matrix = matrix;
-        env = new Environment(7, matrix, 3, 5);
-       
+        spnMinimumChange.setValue(98);
+        spnRadio.setValue(5);
+        spnIndividualsNumber.setValue(120);
+        spnGnerationsAmount.setValue(50);
+        jButtonContinue.setEnabled(false);
+        btnGeonolgy.setEnabled(false);
+        btnRecreate.setEnabled(false);
+        setResizable(false);
     }
     
-    public void clean_matrix(Generation generation, int matrix[][]){
-        Individual[] individuals = generation.individuals;
+    public void clean_matrix(Individual[] individuals, int matrix[][]){
         int i, j;
         for(Individual individual : individuals){
             i = individual.x;
@@ -61,20 +70,10 @@ public class ShowMaps extends javax.swing.JFrame {
     }
     
     
-    public void draw_individuals(Generation generation){
-        Individual[] individuals = generation.individuals;
-        int color;
+    public void draw_individuals(Individual[] individuals){
         for(Individual individual : individuals){
-            color = (int) (255 * individual.normalized_score);
-            btnPixels[individual.x][individual.y].setBackground(new Color(0, color, 0));
+            btnPixels[individual.x][individual.y].setBackground(new java.awt.Color(0, 255, 0));
         }
-        
-        
-        /*
-        freeze = true;
-        while(freeze){
-            
-        }*/
     }
     
     
@@ -142,7 +141,17 @@ public class ShowMaps extends javax.swing.JFrame {
         lblIndividualNumbers = new javax.swing.JLabel();
         jButtonContinue = new javax.swing.JButton();
         labelGenerations = new javax.swing.JLabel();
-        comboBoxGenAmounts = new javax.swing.JComboBox<>();
+        spnGnerationsAmount = new javax.swing.JSpinner();
+        jLabel1 = new javax.swing.JLabel();
+        spnRadio = new javax.swing.JSpinner();
+        spnMutation = new javax.swing.JSpinner();
+        lblMutation = new javax.swing.JLabel();
+        btnGeonolgy = new javax.swing.JButton();
+        lblGenerationCheck = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        btnRecreate = new javax.swing.JButton();
+        cmbGeneration = new javax.swing.JComboBox<>();
+        cmbIndividual = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(153, 153, 255));
@@ -155,6 +164,7 @@ public class ShowMaps extends javax.swing.JFrame {
             }
         });
 
+        spnMinimumChange.setModel(new javax.swing.SpinnerNumberModel(0, null, 99, 1));
         spnMinimumChange.setAutoscrolls(true);
 
         lblMinimunChange.setText("Similitud");
@@ -177,33 +187,82 @@ public class ShowMaps extends javax.swing.JFrame {
 
         labelGenerations.setText("Cantidad de generaciones");
 
-        comboBoxGenAmounts.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jLabel1.setText("Radio");
+
+        spnRadio.setModel(new javax.swing.SpinnerNumberModel(0, null, 10, 1));
+
+        spnMutation.setModel(new javax.swing.SpinnerNumberModel(5, null, 99, 1));
+
+        lblMutation.setText("Mutacion");
+
+        btnGeonolgy.setText("Ver Geonologia");
+        btnGeonolgy.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGeonolgyActionPerformed(evt);
+            }
+        });
+
+        lblGenerationCheck.setText("Generacion");
+
+        jLabel2.setText("Individuo");
+
+        btnRecreate.setText("Recrear");
+        btnRecreate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRecreateActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addGap(6, 6, 6)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButtonContinue)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblIndividualNumbers)
                         .addGap(18, 18, 18)
-                        .addComponent(spnIndividualsNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(64, 64, 64)
+                        .addComponent(spnIndividualsNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(33, 33, 33)
                         .addComponent(lblMinimunChange)
                         .addGap(18, 18, 18)
-                        .addComponent(spnMinimumChange, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(52, 52, 52)
+                        .addComponent(spnMinimumChange, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(labelGenerations)
-                        .addGap(27, 27, 27)
-                        .addComponent(comboBoxGenAmounts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(140, 140, 140)
-                        .addComponent(btnAcceptInfo)
-                        .addGap(154, 154, 154)
-                        .addComponent(btnStop)))
-                .addGap(13, 13, 13))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(spnGnerationsAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(33, 33, 33)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(spnRadio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(42, 42, 42)
+                        .addComponent(lblMutation, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(spnMutation, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnStop))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(lblGenerationCheck, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cmbGeneration, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cmbIndividual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(344, 344, 344)
+                                .addComponent(btnAcceptInfo))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnGeonolgy)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jButtonContinue))
+                                    .addComponent(btnRecreate, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -213,9 +272,6 @@ public class ShowMaps extends javax.swing.JFrame {
                         .addGap(11, 11, 11)
                         .addComponent(lblIndividualNumbers))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(spnIndividualsNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(11, 11, 11)
                         .addComponent(lblMinimunChange))
                     .addGroup(layout.createSequentialGroup()
@@ -223,15 +279,36 @@ public class ShowMaps extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(spnMinimumChange, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(labelGenerations)
-                            .addComponent(comboBoxGenAmounts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(spnGnerationsAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1)
+                            .addComponent(spnRadio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblMutation)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(7, 7, 7)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnAcceptInfo)
-                            .addComponent(btnStop))))
-                .addGap(18, 18, 18)
-                .addComponent(jButtonContinue)
-                .addContainerGap(457, Short.MAX_VALUE))
+                            .addComponent(btnStop)
+                            .addComponent(spnMutation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(spnIndividualsNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonContinue)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnAcceptInfo))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(27, 27, 27)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblGenerationCheck)
+                            .addComponent(cmbGeneration, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnGeonolgy))
+                        .addGap(31, 31, 31)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(cmbIndividual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnRecreate))))
+                .addContainerGap(163, Short.MAX_VALUE))
         );
 
         pack();
@@ -239,79 +316,83 @@ public class ShowMaps extends javax.swing.JFrame {
 
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
         // TODO add your handling code here:
-        dispose();
+        System.exit(0);
     }//GEN-LAST:event_btnStopActionPerformed
 
     private void jButtonContinueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonContinueActionPerformed
-        this.freeze = false;
+        
+        int i = env.generationsList.size()-1;  // Index of the last generation
+        
+        if (i < generationsToCheck || areDifferent){
+            clean_matrix(env.generationsList.get(i).individuals, matrix);  // Its the turn of a new generation, we must clean
+            
+            float last_generation_score, penultimate_generation_score;  // Used for the comparisons    
+
+
+            penultimate_generation_score = env.generationsList.get(i).generation_average;
+            
+            env.createNewGeneration();  // we create a new generation to continue improving the individuals
+            i++;  // Update the index
+            cmbGeneration.addItem(String.valueOf(i));
+            
+            last_generation_score = env.generationsList.get(i).generation_average;
+            draw_individuals(env.generationsList.get(i).individuals);
+
+
+
+             /*The last generation was better than the penultimate
+            we check how good was that improvement*/
+            areDifferent = env.areDifferent(percentage_similarity, penultimate_generation_score, last_generation_score);
+        } else {
+            System.exit(0);
+        }
     }//GEN-LAST:event_jButtonContinueActionPerformed
 
     private void btnAcceptInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAcceptInfoActionPerformed
         // TODO add your handling code here:
+        percentage_similarity = (int) spnMinimumChange.getValue();
+        percentage_similarity /= 100;
+        generationsToCheck = (int) spnGnerationsAmount.getValue();
         
-        //  Preliminar value, then will be improved
-        int generationsToCheck = 3;
-        double percentage_similarity = 0.9;
-        boolean hasToRestart;  // Flag variable
+        int amountIndividuals = (int) spnIndividualsNumber.getValue();
+        int mutationIndex = (int) spnMutation.getValue();
+        int radio = (int) spnRadio.getValue();
         
-        do {  // A do-while because we need to run it at least once and its a loop because we may need to restart the simulation
-            hasToRestart = false;  // At the very start everything is okay
-
-            env.makeFirstGeneration(); // Starts creating the first generation of random individuals
-            int i = 0;  // Index of the last generation
-            int wrongGenerations = 0;  // Tells how many generations where a failure
-
-            boolean areDifferent = true;  // Used for the stop condtion
-            float last_generation_score, penultimate_generation_score;  // Used for the comparisons
-
-            // Gets the score of the very first generation, the only one we have created at this point
-            last_generation_score = env.generationsList.get(i).generation_average;       
-
-            /* Simulation - Creates n generations 
-            Stops when where already created the amount of generations we wanted to check
-            and the generations practically are not different
-            In bad cases can stop and restart due to the bad results*/
-            while(i <= generationsToCheck && areDifferent){
-                draw_individuals(env.generationsList.get(i));  // Prints the most recent generation
-
-                env.createNewGeneration();  // we create a new generation to continue improving the individuals
-                clean_matrix(env.generationsList.get(i), matrix);  // Its the turn of a new generation, we must clean
-                i++;  // Update the index
-
-                // Updates which are the last 2 generations
-                penultimate_generation_score = last_generation_score;
-                last_generation_score = env.generationsList.get(i).generation_average;
-
-                // Checks if the last generation actually is better than the last one
-                if(last_generation_score < penultimate_generation_score){
-                    // Something bad happened, the last generation instead of being better endend being worse
-                    wrongGenerations++;
-
-                    if(wrongGenerations > generationsToCheck){
-                        /* We got too many bad generations
-                        The program is not working properly because instead of improving its getting worse
-                        We end this simulation and restart it to try again*/
-                        env.generationsList.clear();  // Leave clean for the new simulation
-                        hasToRestart = true;  
-                        break;  // Forces the stop of the current simulation, the while(i <= generationsToCheck && stillCanImprove)
-                    }
-
-                } else {
-                    /* The last generation was better than the penultimate
-                    we check how good was that improvement*/
-                    areDifferent = env.areDifferent(percentage_similarity, penultimate_generation_score, last_generation_score);
-                }
-
-            }
-
-            /* Could get out of the while satisfactorily, consequently the change was not important
-            and we already created the amount of generations we wanted
-            and there was no point of continue to produce genrations that won´t improve anymore
-            Also the simulation was not abruplty forced to stop by the break of bad results
-            Therefore, we always got good results
-            We finish the whole program here*/
-        } while(hasToRestart);
+        env = new Environment(amountIndividuals, matrix, radio, mutationIndex);
+        
+        spnMinimumChange.setEnabled(false);
+        spnIndividualsNumber.setEnabled(false);
+        spnGnerationsAmount.setEnabled(false);
+        spnMutation.setEnabled(false);
+        spnRadio.setEnabled(false);
+        
+        btnAcceptInfo.setEnabled(false);
+        jButtonContinue.setEnabled(true);
+        
+        cmbGeneration.setEnabled(true);
+        cmbIndividual.setEnabled(true);
+        
+        btnGeonolgy.setEnabled(true);
+        btnRecreate.setEnabled(true);
+        
+        cmbGeneration.addItem("0");
+        for(int i = 0; i < amountIndividuals; i++){
+            cmbIndividual.addItem(String.valueOf(i));
+        }
+        
+        env.makeFirstGeneration(); // Starts creating the first generation of random individuals
+        draw_individuals(env.generationsList.get(0).individuals);
     }//GEN-LAST:event_btnAcceptInfoActionPerformed
+
+    private void btnGeonolgyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGeonolgyActionPerformed
+        // TODO add your handling code here:
+        env.generationsList.get(cmbGeneration.getSelectedIndex()).individuals[cmbGeneration.getSelectedIndex()].getGeonolgy();
+    }//GEN-LAST:event_btnGeonolgyActionPerformed
+
+    private void btnRecreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRecreateActionPerformed
+        RecreateGui recreate = new RecreateGui(matrix, env.generationsList.get(cmbGeneration.getSelectedIndex()).individuals);
+        recreate.setVisible(true);
+    }//GEN-LAST:event_btnRecreateActionPerformed
 
     /**
      * @param args the command line arguments
@@ -350,13 +431,23 @@ public class ShowMaps extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAcceptInfo;
+    private javax.swing.JButton btnGeonolgy;
+    private javax.swing.JButton btnRecreate;
     private javax.swing.JButton btnStop;
-    private javax.swing.JComboBox<String> comboBoxGenAmounts;
+    private javax.swing.JComboBox<String> cmbGeneration;
+    private javax.swing.JComboBox<String> cmbIndividual;
     private javax.swing.JButton jButtonContinue;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel labelGenerations;
+    private javax.swing.JLabel lblGenerationCheck;
     private javax.swing.JLabel lblIndividualNumbers;
     private javax.swing.JLabel lblMinimunChange;
+    private javax.swing.JLabel lblMutation;
+    private javax.swing.JSpinner spnGnerationsAmount;
     private javax.swing.JSpinner spnIndividualsNumber;
     private javax.swing.JSpinner spnMinimumChange;
+    private javax.swing.JSpinner spnMutation;
+    private javax.swing.JSpinner spnRadio;
     // End of variables declaration//GEN-END:variables
 }

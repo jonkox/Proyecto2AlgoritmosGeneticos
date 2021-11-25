@@ -111,27 +111,22 @@ public final class Individual {
         
         int currentPixel;
 
-        for (int i = auxX; i < x_limit ; i++) {
-            for (int j = auxY; j < y_limit; j++) {
+        for (int i = auxY; i < y_limit ; i++) {
+            for (int j = auxX; j < x_limit; j++) {
                 try {
                     currentPixel = matrix[i][j];
-                    if (currentPixel == 0) {
-                        // Is black, bad. We add 0 so we dont do anything
-                        continue;
-                    } else if (currentPixel == 1){
-                        // Is white, very good
-                        addedScore += 2;
+                    switch (currentPixel) {
+                        case 0 -> {} // Is black, bad. We add 0 so we dont do anything
+                        
+                        case 1 -> addedScore += 2; // Is white, very good
+                        
+                        default ->addedScore++; // Is red, kind of good
                     }
                     
-                    else {
-                        // Is red, kind of good
-                        addedScore++;
-                    }
-                    
+                                        
                  } catch (IndexOutOfBoundsException exception) {
-                     /* Got out of the matrix, we take as 0
-                     We add 0, so we dont add anything*/
-                    continue; 
+                    /* Got out of the matrix, we take as 0
+                    We add 0, so we dont add anything*/ 
                 }
 
             }
@@ -147,21 +142,12 @@ public final class Individual {
     */
     public void calculateIncompleteScore(){
         // Calculates an initial score according the pixels behind the individual
-        switch (matrix[x][y]) {
-            case 0:  // Black
-                incomplete_score = 0;  // Base score is low, black is very bad
-                break;
-                
-                
-            case 1:  // White
-                incomplete_score = 25;  // Base score is high, white is inside the path very good
-                break;
-                
-                
-            default:  // Is red(start or ending)
-                incomplete_score = 15;  // Red is medium, we want to be near the start or end but not inside it
-                break;
-        }
+        incomplete_score = switch (matrix[y][x]) {
+            case 0 -> 0;  // Black, base score is low, black is very bad
+            case 1 -> 20;  // White, base score is high, white is inside the path very good
+            default -> 5; // Is red(start or ending), red is medium, we want to be near the start or end but not inside it
+        };
+
           incomplete_score += lookAround();  // Adds values according to the surroundings
     }
     
@@ -187,14 +173,14 @@ public final class Individual {
         
         int x_closeness;
         int y_closeness;
-        for (int i = auxX; i < x_limit ; i++) {
-            x_closeness = 1;
-            for (int j = auxY; j < y_limit; j++) {
-                y_closeness = 1;
+        for (int i = auxY; i < y_limit ; i++) {
+            y_closeness = 1;
+            for (int j = auxX; j < x_limit; j++) {
+                x_closeness = 1;
                 
                 if(i < i_maxBound && j < j_maxBound) {
                     for (Individual individual : individuals){
-                        if(i == individual.x && j == individual.y){
+                        if(j == individual.x && i == individual.y){
                                                                       // The closer the neighbor is to this individual, the higher its added score gets
                             addedScore += individual.incomplete_score*(y_closeness+x_closeness);
                             break;
@@ -209,23 +195,23 @@ public final class Individual {
                 
                 
                 // Tells how close vertically the neighbor of the next iteration is to the current individual
-                if(j > y){
+                if(j > x){
                     // Is getting futher
-                    y_closeness--;
+                    x_closeness--;
                 } else {
                     // Is getting closer
-                    y_closeness++;
+                    x_closeness++;
                 }
                 
             }
             
             // Tells how close vertically the neighbor of the next iteration is to the current individual
-            if(i > x){
+            if(i > y){
                 // Is getting futher
-                    x_closeness--;
+                    y_closeness--;
                 } else {
                     // Is getting closer
-                    x_closeness++;
+                    y_closeness++;
                 }
         }
             
@@ -253,7 +239,11 @@ public final class Individual {
     */
     public int setNormalizedScore(float sumResult){
         normalized_score = final_score / sumResult;
-        return (int) (normalized_score*100);
+        float value_to_return = normalized_score*100;
+        if(value_to_return < 1 && value_to_return > 0.5){
+            return 1;
+        }
+        return (int)value_to_return;
     }
     
     /*Prints spaces
@@ -282,7 +272,7 @@ public final class Individual {
     */
     private void printTree(ArrayList<ArrayList<String>> geonology){
         int gap[] = {5, 20, 50, 110};  // Horizontal space between an inidividual and the next in the same generation (line) for the nice case
-        int initial[] = {0, 8, 22, 48, 108};  // Starting spaces for each line in the nice case
+        int initial[] = {0, 10, 20, 48, 108};  // Starting spaces for each line in the nice case
         double generation_size;  // Needed for calculations of the nice case
         ArrayList<String> generation_list;  // Needed to print individual by individual in the nice case
         int index;  // Needed to adjust the nice case
@@ -294,7 +284,7 @@ public final class Individual {
             if (generation - i > 4){
                 // General case
                 
-                // Generation is to old and to big
+                // Generation is too old and too big
                 System.out.println(geonology.get(i) + "\n");  // just prints the list
                 System.out.print("Generacion " + (i+2) + ":   ");  // for the next generation (iteration)
                 
@@ -338,6 +328,7 @@ public final class Individual {
         }
         
         System.out.println(geonology.get(generation).get(0));  // Finishes printing THIS individual
+        System.out.println("\n\n");
     }
     
     /*
@@ -350,7 +341,7 @@ public final class Individual {
         if(ind != null){  // Stop condition
             // General case
             generations_list = getGeonolgyAux(ind.father, generations_list);  // Recursive call to father
-            String info = "x: " + ind.x + ", y: " + ind.y;
+            String info = "x: " + ind.x + ", y: " + ind.y + ", Nota: " + ind.normalized_score;
             generations_list.get(ind.generation).add(info);  // Puts itself in the corresponding generation
             generations_list = getGeonolgyAux(ind.mother, generations_list);  // Recursive call to mother    
         }

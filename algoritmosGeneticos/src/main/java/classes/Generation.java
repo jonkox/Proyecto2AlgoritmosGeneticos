@@ -7,14 +7,12 @@ public final class Generation {
     private Individual[] selectionRoulette;  // Algoritmos Genéticos - Semana 11 - Page 3
     private final int amount_individuals;  // How many individuals this genration will have
     public float generation_average;  // Average score from 0 to 0.99 of all the individuals of this generation 
-    private final int[][] matrix;  // Map (matrix) that contains the individuals and their environment, used several times in the fitness score methods
-    
+  
     // Constructor
-    public Generation(int amountIndividuals, int[][] matrix){
+    public Generation(int amountIndividuals){
         this.amount_individuals = amountIndividuals;
         individuals = new Individual[amountIndividuals];
         selectionRoulette = new Individual[100];
-        this.matrix = matrix;
     }
     
     
@@ -41,36 +39,26 @@ public final class Generation {
     */
     private void fillGenerationRoulette(float sum){
         int limit;  // Helps to know from where to where an individul will occupy on the roulette
-        int i = 0;
+        int h = 0;
         
         // Goes individual by individual
         for (Individual individual : individuals){
                             // Gets the normalized score of the current individual
-            limit = i+individual.setNormalizedScore(sum); 
+            limit = h+individual.setNormalizedScore(sum); 
             
             // Fills the spaces the current individual desreves on the roulette
-            while (i < limit){
-                selectionRoulette[i] = individual;
-                i++;
+            while (h < limit){
+                selectionRoulette[h] = individual;
+                if(h == 100){
+                    break;
+                }
+                h++;
             }
+            
+            if(h == 100){
+                    break;
+                }
         }
-        
-        /*Due to the parsing from float to int some decimals could be lost
-        The normalized integer score that we get may be quite smaller than the real normalized score
-        Due to this shrinking the last spaces of the roulette may be left empty
-        To solve this we fill the last final empty spaces with random indivduals*/
-        
-        i = 99;
-        // Goes backward, from the end to the start
-        
-        System.out.println("la cantidad de individuos es  " + amount_individuals);
-        while(selectionRoulette[i] == null){
-            // Found an empty space
-            selectionRoulette[i] = individuals[(int)Math.floor(Math.random()*amount_individuals)];   // Chooses a random individual to fill it
-            System.out.println(i);
-            i--;
-        }
-        System.out.println("------------------------------------------------");
     }
     
     // Gives a fitness score to all the individuals of the generation
@@ -80,8 +68,8 @@ public final class Generation {
         for (Individual individual : individuals){
             sum += individual.calculateFitnessScore(individuals);
         }
+
         generation_average = sum / amount_individuals; // Sets the average score of the generation
-        System.out.println("la suma de esto es"+sum);
         fillGenerationRoulette(sum);
     }
     
@@ -89,7 +77,11 @@ public final class Generation {
     /*Selects an individuals of this generation to reproduce
     Randomly selects it from the selectionRoulette*/
     public Individual selectIndividual(){
-        return selectionRoulette[(int)Math.floor(Math.random()*100)];
+        Individual ind = selectionRoulette[(int)Math.floor(Math.random()*100)];
+        if (ind == null){
+            ind = individuals[(int)Math.floor(Math.random()*amount_individuals)];
+        }
+        return ind;
     }
     
 }
